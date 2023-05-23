@@ -156,21 +156,28 @@ export default {
         grant_type: 'client_credentials', //nao altere
 
         // Crie e copie as credenciais aqui: https://e2payments.explicador.co.mz/admin/credentials
-        client_id: process.env.CLIENT_ID, // neste formato '99227735-dd04-4538-bf50-27eeed2bbbb'
-        client_secret: process.env.CLIENT_SECRET, // neste formato 'EuLHLIyhm9mFEgZPBKrBdZHXKuyygfRHZWelscTx'
+        //client_id: process.env.CLIENT_ID = ,
+        client_id:"99322af8-1d6c-4f41-ae73-3aad513a4987",
+       // client_secret: process.env.CLIENT_SECRET ='2dkAnKB3sZyu5GD8EIDdJUuQQ4XMcYkosgAm5WR',
+        client_secret:"J2dkAnKB3sZyu5GD8EIDdJUuQQ4XMcYkosgAm5WR",
+        mpesa_wallet:860997
 
         // Use este link para criar e copiar o id para a sua carteira Mpesa: https://e2payments.explicador.co.mz/admin/wallets?w=MPesa
         //nao eh preciso enviar para requisitar token
-        mpesa_wallet: process.env.MPESA_WALLET, //formato 123456
+        //mpesa_wallet: process.env.MPESA_WALLET, //formato 123456
 
         // Use este link para criar e copiar o id para a sua carteira eMola: https://e2payments.explicador.co.mz/admin/wallets?w=eMola
         //nao eh preciso enviar para requisitar token
-        emola_wallet: process.env.EMOLA_WALLET, //formato 123456
+       // emola_wallet: process.env.EMOLA_WALLET, //formato 123456
       }
 
       // Requisicao do token
       let token = await axios.post('https://e2payments.explicador.co.mz/oauth/token', credentials)
+
         .then(response => {
+
+          console.log(response.data.token_type + ' ' + response.data.access_token)
+
           return response.data.token_type + ' ' + response.data.access_token
         }).catch(error => {
           return null
@@ -186,7 +193,7 @@ export default {
       // Usar esta estrutura do Header para que a requisicao seja permitida pelo servidor de e2Payments
       const headers = {
         headers: {
-          'Authorization': token,
+          'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5OTMyMmFmOC0xZDZjLTRmNDEtYWU3My0zYWFkNTEzYTQ5ODciLCJqdGkiOiJlNTU1NjI3YzY2YTE4MDhkODFjOTI5OTczNWI1YzAyNmRjM2NkZTYzZGI4NzJkM2NjNmM0ZjgzNzRlYzI0OTA3ZGZiZTlmMWI4NGZkNzk0OCIsImlhdCI6MTY4NDYxMjM2Ny43NTE5NTMsIm5iZiI6MTY4NDYxMjM2Ny43NTE5NTksImV4cCI6MTcxNjIzNDc2Ny43NDQ1ODcsInN1YiI6IiIsInNjb3BlcyI6W119.vF6dvhz2COhZodH62NoYudq8uINirZncAOkpGU1G5hSd3bqNGYk2u1IxNqsx4JFGj3PBIkiEldpkjJ5F4J4dqHYtF3y9_7NLfUTlJcbOdQnw-jxspZJ_L1HTUz3xuJBT1RxSGMbID6uTqOLQx3U-ha8vzH0lW1kog38SkiV-hUW4uAd79q0l-MbahSoPW798eWu6A_L3gKUkU2NVcsBkcWHf-xBVqotlgLdKJN29UcufqpiFvwf-7Do-a9AjYbHY4hyJ3CYlAWQGq0BiMN_HPMMhd3erKY9DzfjYupkQ0pEhjI63y8rGeYPlVOuRiM7Yn3e-AowmBVlJiEidDstW6zukFK3Xbo0pskdo1w7zn6riaVmvi5vFnQLAy4Drd41f5cOwCiI0w9jlzMbgjQaMjrIAAOw6SjvVT0x50f5HOdeD-EWvO-G4xTEUosw5ulsm3wcfNdPOzZ4tbbgEjUFwZhf9hyWC-F9p9I6nKVCbbhTcsF1Hq8UtGXq6z81ORLraKosIpv010jNS4QBFFSjVT0t7Iipqg2aNT8LSXE5gwh3bhAlqsOEejSXV_bee6VxwF1klYcov8g5ov0SOlb-XLvdihehPZsLlew-MyNKgjEjPi04ILlbTk4MHkCymssqa9sBbMmEdIJbSFSEkeZMTSdlqVp5nCSbuwjA1EynDL-I',
           'Content-Type' : 'application/json',
           'Accept': 'application/json'
         }
@@ -195,7 +202,7 @@ export default {
       // Endpoint para pagamento via Mpesa ou eMola
       const paymentEndpoint =
           (this.paymentOptSelected === 'Mpesa') ? 'https://e2payments.explicador.co.mz/v1/c2b/mpesa-payment/' + credentials.mpesa_wallet :
-          this.paymentOptSelected === 'eMola' ? 'https://e2payments.explicador.co.mz/v1/c2b/emola-payment/' + credentials.emola_wallet :
+          (this.paymentOptSelected === 'eMola') ? 'https://e2payments.explicador.co.mz/v1/c2b/emola-payment/' + credentials.emola_wallet :
           null // retorna-se null caso nao se tenha selecionado Mpesa ou eMola
 
       // Realizacao da transacao usando axios.post
@@ -219,6 +226,7 @@ export default {
 
         } else {
 
+          console.log('erro',error)
           this.showPaymentResponse(false, 'Pagamento nao realizado, ocorreu um erro.')
 
         }
